@@ -1,18 +1,17 @@
 - hosts: jenkins-node1
   become: true
   tasks:
-  - user:
-      name: jenkins
-      group: sudo
-      generate_ssh_key: yes
-      ssh_key_file: .ssh/jenkins-node1
-      state: present
   - apt: #packages needed for this ec2 to become a jenkins node
       update_cache: yes
       name: 
         - openjdk-8-jdk
         - python3
       state: present
+
+  - user: #we need to add this user to docker group so this user can run docker, build images etc.
+      name: ubuntu
+      groups: docker
+      append: yes
 
 
 # standard way of installing docker on ubuntu
