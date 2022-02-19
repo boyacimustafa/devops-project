@@ -7,9 +7,49 @@
       generate_ssh_key: yes
       ssh_key_file: .ssh/jenkins-node1
       state: present
-  - apt:
+  - apt: #packages needed for this ec2 to become a jenkins node
       update_cache: yes
       name: 
         - openjdk-8-jdk
         - python3
       state: present
+
+
+# standard way of installing docker on ubuntu
+  - name: install dependencies
+    apt:
+     name: "{{item}}"
+     state: present
+     update_cache: yes
+    loop:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+
+  - name: Add Docker's official GPG key
+    apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+  - name: set up the stable repository
+    apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+  - name: install docker engine
+    apt:
+      name: "{{item}}"
+      state: latest
+      update_cache: yes
+    loop:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+
+  - name: make sure docker service running and enabled
+    service:
+      name: docker
+      state: started
+      enabled: yes      
