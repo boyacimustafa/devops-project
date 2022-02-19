@@ -1,0 +1,15 @@
+- hosts: jenkins-node1
+  become: true
+  tasks:
+  - user:
+      name: jenkins
+      group: sudo
+      generate_ssh_key: yes
+      ssh_key_file: .ssh/jenkins-node1
+      state: present
+  - apt:
+      update_cache: yes
+      name: 
+        - openjdk-8-jdk
+        - python3
+      state: present
